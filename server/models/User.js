@@ -18,6 +18,44 @@ const userSchema = new mongoose.Schema(
       maxlength: [32, 'Username cannot exceed 32 characters'],
     },
 
+    // Optional custom display name (overrides username in UI)
+    nickname: {
+      type: String,
+      trim: true,
+      maxlength: [32, 'Nickname cannot exceed 32 characters'],
+    },
+
+    // Short artist bio or about me
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: [500, 'Bio cannot exceed 500 characters'],
+    },
+
+    pronouns: {
+      type: String,
+      trim: true,
+      maxlength: [30, 'Pronouns cannot exceed 30 characters'],
+    },
+
+    // Profile cover image
+    bannerUrl: {
+      type: String,
+      default: '',
+    },
+
+    // Link to external portfolio or gallery
+    portfolioLink: {
+      type: String,
+      trim: true,
+    },
+
+    // Hex code for profile card theme
+    accentColor: {
+      type: String,
+      default: '#5865F2', // Default Discord-ish blurple
+    },
+
     // Used for login — must be unique
     email: {
       type: String,

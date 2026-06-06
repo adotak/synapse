@@ -26,6 +26,7 @@ const authRoutes = require('./routes/auth');
 const serverRoutes = require('./routes/servers');
 const channelRoutes = require('./routes/channels');
 const messageRoutes = require('./routes/messages');
+const userRoutes = require('./routes/users');
 
 // Import models (needed for Socket.io message handling)
 const Message = require('./models/Message');
@@ -112,6 +113,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/servers', serverRoutes);
 app.use('/api/channels', channelRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/users', userRoutes);
 
 // File upload endpoint
 app.post('/api/upload', upload.single('file'), (req, res) => {
@@ -212,10 +214,16 @@ async function startServer() {
     console.log('⚠️  No valid MONGODB_URI found in environment variables.');
     console.log('🚀 Starting local in-memory MongoDB server using mongodb-memory-server...');
     try {
+      const dbPath = path.join(__dirname, 'db_data');
+      if (!fs.existsSync(dbPath)) {
+        fs.mkdirSync(dbPath, { recursive: true });
+      }
+
       const { MongoMemoryServer } = require('mongodb-memory-server');
       const mongoServer = await MongoMemoryServer.create({
         instance: {
           dbName: 'synapse',
+          dbPath: dbPath,
         },
         binary: {
           version: '4.4.29', // E5-1620 v2 compatible (AVX support only, no AVX2 requirements)

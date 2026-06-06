@@ -100,8 +100,15 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('synapse_user');
   };
 
+  // --- Update User Function ---
+  const updateUser = (newData) => {
+    const updatedUser = { ...user, ...newData };
+    setUser(updatedUser);
+    localStorage.setItem('synapse_user', JSON.stringify(updatedUser));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, register, login, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, register, login, logout, updateUser }}>
       {!loading && children}
     </AuthContext.Provider>
   );

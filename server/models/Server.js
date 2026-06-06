@@ -37,10 +37,26 @@ const serverSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+
+    // Short code to easily join the server (e.g. "A7B9Z2")
+    inviteCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// Before saving a new server, automatically generate a 6-character alphanumeric invite code
+serverSchema.pre('save', function (next) {
+  if (this.isNew && !this.inviteCode) {
+    // Generate a random 6 character string (uppercase alphanumeric)
+    this.inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+  }
+  next();
+});
 
 module.exports = mongoose.model('Server', serverSchema);

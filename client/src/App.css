@@ -6,7 +6,7 @@
    ============================================ */
 
 /* ---- Google Font ---- */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
 
 /* ============================================
    CSS Custom Properties (Design Tokens)
@@ -927,13 +927,16 @@ input, textarea {
 .modal-overlay {
   position: fixed;
   inset: 0;
+  padding: 24px;
   background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000;
   animation: fadeIn 0.15s ease;
   backdrop-filter: blur(4px);
+  box-sizing: border-box;
+  overflow-y: auto;
 }
 
 @keyframes fadeIn {
@@ -942,11 +945,14 @@ input, textarea {
 }
 
 .modal {
+  position: relative;
   background: var(--bg-medium);
   border-radius: var(--radius-lg);
   padding: 32px;
   width: 100%;
   max-width: 440px;
+  max-height: calc(100vh - 48px);
+  overflow: auto;
   box-shadow: var(--shadow-elevation-high);
   animation: modalSlideUp 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -1061,4 +1067,765 @@ input, textarea {
     height: 40px;
     font-size: 15px;
   }
+}
+
+/* ========================================= */
+/* User Panel Actions */
+/* ========================================= */
+.user-panel-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.settings-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+}
+
+.user-panel-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* ========================================= */
+/* User Settings Modal */
+/* ========================================= */
+.user-settings-overlay {
+  background-color: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+}
+
+.user-settings-modal {
+  position: relative;
+  width: 900px;
+  max-width: 95vw;
+  height: 600px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.btn-close-modal {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.btn-close-modal:hover {
+  color: white;
+}
+
+.user-settings-content {
+  display: flex;
+  flex: 1;
+  height: 100%;
+}
+
+.user-settings-form-section {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+}
+
+.user-settings-preview-section {
+  width: 340px;
+  background-color: var(--bg-tertiary);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-left: 1px solid rgba(255,255,255,0.05);
+}
+
+.user-settings-form-section h2 {
+  margin-bottom: 8px;
+  color: var(--text-main);
+}
+
+.settings-form {
+  margin-top: 24px;
+}
+
+.settings-form .form-group {
+  margin-bottom: 20px;
+}
+
+.settings-form .row {
+  display: flex;
+  gap: 16px;
+}
+
+.settings-form .form-group-half {
+  flex: 1;
+}
+
+.theme-color-group .color-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-primary);
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.color-picker {
+  -webkit-appearance: none;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  background: transparent;
+}
+
+.color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-picker::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+.color-hex {
+  font-family: monospace;
+  color: var(--text-muted);
+}
+
+.settings-actions {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ========================================= */
+/* Profile Preview Card */
+/* ========================================= */
+.profile-card-preview {
+  width: 300px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  position: relative;
+  margin-top: 16px;
+}
+
+.profile-banner {
+  height: 120px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.profile-avatar-container {
+  position: absolute;
+  top: 76px;
+  left: 16px;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background-color: var(--bg-secondary);
+  padding: 6px;
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: var(--bg-primary);
+}
+
+.edit-image-btn {
+  position: absolute;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.banner-edit-btn {
+  top: 12px;
+  right: 12px;
+}
+
+.avatar-edit-btn {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.profile-banner:hover .banner-edit-btn,
+.profile-avatar-container:hover .avatar-edit-btn {
+  opacity: 1;
+}
+
+.profile-card-body {
+  padding: 64px 16px 16px 16px;
+}
+
+.profile-name-area {
+  margin-bottom: 12px;
+}
+
+.profile-display-name {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text-main);
+}
+
+.profile-username {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.profile-pronouns {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.divider {
+  height: 1px;
+  background-color: rgba(255,255,255,0.1);
+  margin: 12px 0;
+}
+
+.profile-section {
+  margin-bottom: 12px;
+}
+
+.profile-section h4 {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.profile-bio {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-main);
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.empty-placeholder {
+  color: rgba(255,255,255,0.3);
+  font-style: italic;
+}
+
+.profile-link {
+  color: var(--accent-color, #5865F2);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.profile-link:hover {
+  text-decoration: underline;
+}
+
+/* ========================================= */
+/* Server Discover & Settings Modals */
+/* ========================================= */
+.server-header {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.server-header:hover {
+  background-color: rgba(255,255,255,0.05);
+}
+
+.server-name-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.server-settings-trigger {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  padding: 4px;
+}
+
+.server-header:hover .server-settings-trigger {
+  opacity: 1;
+}
+
+.server-settings-trigger:hover {
+  color: var(--text-main);
+}
+
+/* Discover Modal */
+.discover-modal {
+  position: relative;
+  width: 800px;
+  max-width: 90vw;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.join-by-code-section {
+  background-color: var(--bg-tertiary);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+}
+
+.join-by-code-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: var(--text-main);
+  text-transform: uppercase;
+}
+
+.join-by-code-form {
+  display: flex;
+  gap: 12px;
+}
+
+.join-by-code-form input {
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: monospace;
+  font-size: 18px;
+}
+
+.join-by-code-form input::placeholder {
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.discover-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
+
+.discover-card {
+  background-color: var(--bg-tertiary);
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.discover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  border-color: rgba(255,255,255,0.1);
+}
+
+.discover-card-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background-color: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.discover-card-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.discover-card-info h4 {
+  margin: 0 0 4px 0;
+  color: var(--text-main);
+  font-size: 16px;
+}
+
+.discover-card-info .member-count {
+  margin: 0 0 16px 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.btn-join {
+  background-color: #3ba55c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.2s;
+}
+
+.btn-join:hover {
+  background-color: #2d8047;
+}
+
+/* Server Settings Modal */
+.server-settings-modal {
+  position: relative;
+  width: 500px;
+}
+
+.server-settings-content {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.server-settings-icon {
+  flex-shrink: 0;
+}
+
+.server-icon-placeholder.large {
+  width: 100px;
+  height: 100px;
+  border-radius: 24px;
+  font-size: 40px;
+}
+
+.server-settings-details {
+  flex: 1;
+}
+
+.disabled-input {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.field-description {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: -4px;
+  margin-bottom: 8px;
+}
+
+.invite-code-group {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.invite-code-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-primary);
+  padding: 12px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.invite-code-box.missing {
+  opacity: 0.5;
+  justify-content: center;
+}
+
+.invite-code-text {
+  font-family: monospace;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  color: var(--accent);
+}
+
+.btn-copy {
+  background-color: var(--bg-tertiary);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-main);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-copy:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+.server-stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text-main);
+}
+
+.stat-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* ========================================================================= */
+/* PREMIUM UI/UX OVERHAUL (Outfit Font, Floating Panels, Gooey Cutout Dock) */
+/* ========================================================================= */
+
+:root {
+  /* Overwrite the core font */
+  --font-primary: 'Outfit', sans-serif;
+  
+  /* Overwrite background colors for floating style */
+  --bg-app-gradient: linear-gradient(135deg, #2b1055, #7597de);
+  --bg-panel: rgba(30, 31, 34, 0.7);
+  --bg-dock: #1e1f22;
+  --bg-input: rgba(0, 0, 0, 0.4);
+  --panel-radius: 24px;
+}
+
+body {
+  font-family: var(--font-primary);
+  background: var(--bg-app-gradient);
+  color: var(--text-primary);
+}
+
+* {
+  font-family: var(--font-primary) !important;
+}
+
+/* Base App Layout */
+.app-container {
+  display: flex;
+  height: 100vh;
+  padding: 24px;
+  gap: 24px;
+  background: transparent !important;
+  box-sizing: border-box;
+}
+
+/* ------------------------------------- */
+/* Server Sidebar (Gooey Cutout Dock) */
+/* ------------------------------------- */
+.server-sidebar {
+  width: 88px;
+  background-color: var(--bg-dock);
+  border-radius: 44px; /* Pill shape */
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 16px 32px rgba(0,0,0,0.4);
+  height: calc(100vh - 48px);
+  overflow: visible !important;
+}
+
+.server-icon-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+/* Default state */
+.server-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 26px;
+  background-color: var(--bg-medium);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* Hover state */
+.server-icon:hover {
+  border-radius: 16px;
+  background-color: var(--accent);
+}
+
+/* ACTIVE STATE - Gooey Cutout Effect */
+.server-icon.active {
+  background-color: #3ba55c; /* Bright green */
+  color: white;
+  border-radius: 50%;
+  transform: translateX(18px); /* Pop out to the right */
+  box-shadow: 0 8px 16px rgba(59, 165, 92, 0.4);
+}
+
+/* The actual "Cutout" logic using a wrapper that only shows on active */
+.server-icon-wrapper:has(.server-icon.active)::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -8px; /* Stick out towards the popped icon */
+  transform: translateY(-50%);
+  width: 60px;
+  height: 100px;
+  background-color: transparent;
+  /* Complex box-shadow to carve the rounded indentation into the dock */
+  box-shadow: 
+    -20px -30px 0 0 var(--bg-dock),
+    -20px 30px 0 0 var(--bg-dock);
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Tooltips */
+.server-tooltip {
+  display: none;
+}
+.server-icon-wrapper:hover .server-tooltip {
+  display: block;
+  left: 90px;
+}
+
+/* Hide the little left bar indicator since we have the cutout */
+.server-icon-wrapper::before {
+  display: none !important;
+}
+
+/* ------------------------------------- */
+/* Channel Sidebar (Floating Panel) */
+/* ------------------------------------- */
+.channel-sidebar {
+  width: 280px;
+  background-color: var(--bg-panel);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: var(--panel-radius);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  height: calc(100vh - 48px);
+}
+
+/* ------------------------------------- */
+/* Chat Area (Floating Panel) */
+/* ------------------------------------- */
+.chat-area {
+  flex: 1;
+  background-color: var(--bg-panel);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: var(--panel-radius);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  height: calc(100vh - 48px);
+  overflow: hidden;
+}
+
+/* ------------------------------------- */
+/* Chat Input (Pill Shape) */
+/* ------------------------------------- */
+.chat-input-container {
+  padding: 0 24px 24px 24px;
+  background: transparent !important;
+}
+
+.chat-input-wrapper {
+  background-color: var(--bg-input);
+  border-radius: 30px; /* Pill */
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.chat-input-wrapper input {
+  background: transparent;
+  color: white;
+  border: none;
+  flex: 1;
+  font-size: 16px;
+  outline: none;
+}
+
+/* Modals Modernization */
+.modal {
+  background-color: rgba(30, 31, 34, 0.85);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  box-shadow: 0 32px 64px rgba(0,0,0,0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-subtitle {
+  color: #c4c4c4;
+}
+
+/* Fix server setting stat display */
+.server-stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 32px;
+  background: rgba(0,0,0,0.2);
+  padding: 16px 24px;
+  border-radius: 16px;
 }

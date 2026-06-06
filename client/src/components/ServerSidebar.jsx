@@ -7,10 +7,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { api } from '../context/AuthContext';
+import DiscoverServersModal from './DiscoverServersModal';
 
 export default function ServerSidebar({ activeServer, onServerSelect }) {
   const [servers, setServers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDiscoverOpen, setIsDiscoverOpen] = useState(false);
   const [modalMode, setModalMode] = useState('create'); // 'create' or 'join'
   const [serverName, setServerName] = useState('');
   const [serverIdToJoin, setServerIdToJoin] = useState('');
@@ -35,6 +37,27 @@ export default function ServerSidebar({ activeServer, onServerSelect }) {
   useEffect(() => {
     fetchServers();
   }, []);
+
+  useEffect(() => {
+    if (!isModalOpen && !isDiscoverOpen) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        closeModal();
+        setIsDiscoverOpen(false);
+      }
+    };
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isModalOpen, isDiscoverOpen]);
 
   const handleCreateServer = async (e) => {
     e.preventDefault();
@@ -62,19 +85,26 @@ export default function ServerSidebar({ activeServer, onServerSelect }) {
     setError('');
 
     if (!serverIdToJoin.trim()) {
-      setError('Server ID is required.');
+      setError('Server ID or Invite Code is required.');
       return;
     }
 
     try {
-      const response = await api.post(`/api/servers/${serverIdToJoin.trim()}/join`);
+      // Determine if it's an invite code (short) or ID (long)
+      let response;
+      if (serverIdToJoin.trim().length === 6) {
+        response = await api.post(`/api/servers/joinByCode`, { inviteCode: serverIdToJoin.trim() });
+      } else {
+        response = await api.post(`/api/servers/${serverIdToJoin.trim()}/join`);
+      }
+      
       const joinedServer = response.data.data;
 
       setServers((prev) => [...prev, joinedServer]);
       onServerSelect(joinedServer);
       closeModal();
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to join server. Check the ID.');
+      setError(err.response?.data?.error || 'Failed to join server. Check the ID or Invite Code.');
     }
   };
 
@@ -83,6 +113,11 @@ export default function ServerSidebar({ activeServer, onServerSelect }) {
     setServerName('');
     setServerIdToJoin('');
     setError('');
+  };
+
+  const handleDiscoverJoin = (joinedServer) => {
+    setServers((prev) => [...prev, joinedServer]);
+    onServerSelect(joinedServer);
   };
 
   return (
@@ -125,6 +160,7 @@ export default function ServerSidebar({ activeServer, onServerSelect }) {
       <div className="server-icon-wrapper">
         <button
           onClick={() => {
+            setIsDiscoverOpen(false);
             setModalMode('create');
             setIsModalOpen(true);
           }}
@@ -135,10 +171,36 @@ export default function ServerSidebar({ activeServer, onServerSelect }) {
         <div className="server-tooltip">Create or Join Server</div>
       </div>
 
+      {/* Discover Servers Button */}
+      <div className="server-icon-wrapper" style={{ marginTop: '8px' }}>
+        <button
+          onClick={() => {
+            setIsModalOpen(false);
+            setIsDiscoverOpen(true);
+          }}
+          className="add-server-btn discover-btn"
+          style={{ backgroundColor: 'var(--bg-tertiary)', color: '#3ba55c' }}
+        >
+          🧭
+        </button>
+        <div className="server-tooltip">Discover Servers</div>
+      </div>
+
+      {/* Discover Servers Modal */}
+      {isDiscoverOpen && (
+        <DiscoverServersModal 
+          onClose={() => setIsDiscoverOpen(false)} 
+          onJoin={handleDiscoverJoin} 
+        />
+      )}
+
       {/* Create / Join Server Modal */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="btn-close-modal" onClick={closeModal} aria-label="Close modal">
+              ✕
+            </button>
             <h2>
               {modalMode === 'create' ? 'Create a Server' : 'Join a Server'}
             </h2>

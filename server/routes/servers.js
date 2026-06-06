@@ -114,4 +114,62 @@ router.post('/:id/join', auth, async (req, res) => {
   }
 });
 
+// ============================================
+// GET /api/servers/discover
+// ============================================
+// Returns all public servers that the user is NOT a member of.
+router.get('/discover', auth, async (req, res) => {
+  try {
+    // Find servers where the members array does NOT include this user's ID
+    const servers = await Server.find({ members: { $ne: req.user.id } })
+      .populate('owner', 'username avatar')
+      .sort({ createdAt: -1 });
+
+    res.json({ data: servers });
+  } catch (error) {
+    console.error('Discover servers error:', error);
+    res.status(500).json({ error: 'Failed to fetch discoverable servers.' });
+  }
+});
+
+// ============================================
+// POST /api/servers/joinByCode
+// ============================================
+// Allows a user to join a server using its 6-character invite code
+router.post('/joinByCode', auth, async (req, res) => {
+  try {
+    const { inviteCode } = req.body;
+    if (!inviteCode || !inviteCode.trim()) {
+      return res.status(400).json({ error: 'Invite code is required.' });
+    }
+
+    const server = await Server.findOne({ inviteCode: inviteCode.trim().toUpperCase() });
+
+    if (!server) {
+      return res.status(404).json({ error: 'Invalid invite code or server not found.' });
+    }
+
+    // Check if user is already a member
+    if (server.members.includes(req.user.id)) {
+      return res.status(400).json({ error: 'You are already a member of this server.' });
+    }
+
+    // Add user to server's members
+    server.members.push(req.user.id);
+    await server.save();
+
+    // Add server to user's servers list
+    await User.findByIdAndUpdate(req.user.id, {
+      $push: { servers: server._id },
+    });
+
+    await server.populate('owner', 'username avatar');
+
+    res.json({ data: server });
+  } catch (error) {
+    console.error('Join by code error:', error);
+    res.status(500).json({ error: 'Failed to join server by code.' });
+  }
+});
+
 module.exports = router;

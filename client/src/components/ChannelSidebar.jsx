@@ -11,12 +11,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { api, useAuth } from '../context/AuthContext';
+import UserSettingsModal from './UserSettingsModal';
+import ServerSettingsModal from './ServerSettingsModal';
 
 export default function ChannelSidebar({ activeServer, activeChannel, onChannelSelect }) {
   const { user, logout } = useAuth();
   const [channels, setChannels] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isServerSettingsOpen, setIsServerSettingsOpen] = useState(false);
   const [channelName, setChannelName] = useState('');
   const [error, setError] = useState('');
 
@@ -47,6 +51,28 @@ export default function ChannelSidebar({ activeServer, activeChannel, onChannelS
 
     fetchChannels();
   }, [activeServer?._id]);
+
+  useEffect(() => {
+    if (!isModalOpen && !isSettingsOpen && !isServerSettingsOpen) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsModalOpen(false);
+        setIsSettingsOpen(false);
+        setIsServerSettingsOpen(false);
+      }
+    };
+
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isModalOpen, isSettingsOpen, isServerSettingsOpen]);
 
   // Check if the current user is the server owner (can create channels)
   const isOwner = activeServer?.owner?._id === user?.id || activeServer?.owner === user?.id;
@@ -85,6 +111,8 @@ export default function ChannelSidebar({ activeServer, activeChannel, onChannelS
     logout();
   };
 
+  const userAvatar = user?.avatar || `https://api.dicebear.com/7.x/initials/svg?seed=${user?.username}`;
+
   // If no server is selected, show an empty state
   if (!activeServer) {
     return (
@@ -98,17 +126,23 @@ export default function ChannelSidebar({ activeServer, activeChannel, onChannelS
         {user && (
           <div className="user-panel">
             <div className="user-panel-avatar">
-              {user.username?.charAt(0).toUpperCase()}
+              <img src={userAvatar} alt="avatar" />
             </div>
             <div className="user-panel-info">
-              <div className="user-panel-name">{user.username}</div>
+              <div className="user-panel-name">{user.nickname || user.username}</div>
               <div className="user-panel-status">Online</div>
             </div>
-            <button className="logout-btn" onClick={handleLogout} title="Log Out">
-              ⏻
-            </button>
+            <div className="user-panel-actions">
+              <button className="settings-btn" onClick={() => setIsSettingsOpen(true)} title="User Settings">
+                ⚙️
+              </button>
+              <button className="logout-btn" onClick={handleLogout} title="Log Out">
+                ⏻
+              </button>
+            </div>
           </div>
         )}
+        {isSettingsOpen && <UserSettingsModal onClose={() => setIsSettingsOpen(false)} />}
       </aside>
     );
   }
@@ -116,8 +150,11 @@ export default function ChannelSidebar({ activeServer, activeChannel, onChannelS
   return (
     <aside className="channel-sidebar">
       {/* Server Name Header */}
-      <div className="channel-header">
-        {activeServer.name}
+      <div className="channel-header server-header" onClick={() => setIsServerSettingsOpen(true)}>
+        <span className="server-name-text">{activeServer.name}</span>
+        <button className="server-settings-trigger" title="Server Settings">
+          ⚙️
+        </button>
       </div>
 
       {/* Channel Category Header */}
@@ -162,22 +199,48 @@ export default function ChannelSidebar({ activeServer, activeChannel, onChannelS
       {user && (
         <div className="user-panel">
           <div className="user-panel-avatar">
-            {user.username?.charAt(0).toUpperCase()}
+            <img src={userAvatar} alt="avatar" />
           </div>
           <div className="user-panel-info">
-            <div className="user-panel-name">{user.username}</div>
+            <div className="user-panel-name">{user.nickname || user.username}</div>
             <div className="user-panel-status">Online</div>
           </div>
-          <button className="logout-btn" onClick={handleLogout} title="Log Out">
-            ⏻
-          </button>
+          <div className="user-panel-actions">
+            <button
+              className="settings-btn"
+              onClick={() => {
+                setIsServerSettingsOpen(false);
+                setIsModalOpen(false);
+                setIsSettingsOpen(true);
+              }}
+              title="User Settings"
+            >
+              ⚙️
+            </button>
+            <button className="logout-btn" onClick={handleLogout} title="Log Out">
+              ⏻
+            </button>
+          </div>
         </div>
+      )}
+
+      {/* Modals */}
+      {isSettingsOpen && <UserSettingsModal onClose={() => setIsSettingsOpen(false)} />}
+      
+      {isServerSettingsOpen && (
+        <ServerSettingsModal 
+          server={activeServer} 
+          onClose={() => setIsServerSettingsOpen(false)} 
+        />
       )}
 
       {/* Create Channel Modal */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <button type="button" className="btn-close-modal" onClick={closeModal} aria-label="Close modal">
+              ✕
+            </button>
             <h2>Create Channel</h2>
             <p className="modal-subtitle">
               Add a new text channel to {activeServer.name}
